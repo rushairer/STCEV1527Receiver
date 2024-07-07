@@ -1,0 +1,46 @@
+{
+  "name": "The433Receiver",
+  "type": "C51",
+  "dependenceList": [],
+  "srcDirs": [
+    "src",
+    "inc"
+  ],
+  "outDir": "build",
+  "virtualFolder": {
+    "name": "<virtual_root>",
+    "files": [],
+    "folders": []
+  },
+  "miscInfo": {
+    "uid": "ee27ea47b2ee1c53b471ccfcd4f1fa7d"
+  },
+  "targets": {
+    "Release": {
+      "excludeList": [],
+      "toolchain": "SDCC",
+      "compileConfig": {
+        "options": "null"
+      },
+      "uploader": "stcgal",
+      "uploadConfig": {
+        "bin": "",
+        "eepromImgPath": "null",
+        "options": "./.EIDE/stc.flash.json",
+        "extraOptions": ""
+      },
+      "uploadConfigMap": {},
+      "custom_dep": {
+        "name": "default",
+        "incList": [],
+        "libList": [],
+        "defineList": [
+          "DEBUG"
+        ]
+      }
+    }
+  },
+  "version": "3.4",
+  "deviceName": null,
+  "packDir": null
+}
