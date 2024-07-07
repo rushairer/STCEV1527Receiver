@@ -5,23 +5,26 @@
 #define RF_PIN  P54
 #define BTN_PIN P55
 
-uint8_t HTime        = 0; // ¸ßµçÆ½Ê±¼ä
-uint8_t LTime        = 0; // µÍµçÆ½Ê±¼ä
-uint8_t HData        = 0; // ¸¨ÖúÊı¾İ½»»»
-uint8_t LData        = 0; // ¸¨ÖúÊı¾İ½»»»
-uint8_t RFCount      = 0; // ½ÓÊÕÎ»Êı
-uint8_t SyncCodeFlag = 0; // Í¬²½Âë±êÖ¾
-uint8_t IsRFSuccess  = 0; // ½ÓÊÕÍê³É±êÖ¾
+uint8_t HTime        = 0; // é«˜ç”µå¹³æ—¶é—´
+uint8_t LTime        = 0; // ä½ç”µå¹³æ—¶é—´
+uint8_t HData        = 0; // è¾…åŠ©æ•°æ®äº¤æ¢
+uint8_t LData        = 0; // è¾…åŠ©æ•°æ®äº¤æ¢
+uint8_t RFCount      = 0; // æ¥æ”¶ä½æ•°
+uint8_t SyncCodeFlag = 0; // åŒæ­¥ç æ ‡å¿—
+uint8_t IsRFSuccess  = 0; // æ¥æ”¶å®Œæˆæ ‡å¿—
 
 uint32_t EV1527Code;
 uint32_t EV1527Value, EV1527Value1, EV1527Value2;
 uint32_t TempValue;
-__bit Synced = 1;
+uint8_t Synced = 1;
 
 uint8_t RF433AddressHigh    = 0;
 uint8_t RF433AddressLow     = 0;
 uint8_t RF433AddressCommand = 0;
 
-uint16_t RF433Address = 65535; // Ëæ»úÉèÖÃ
+uint16_t RF433Address = 65535; // éšæœºè®¾ç½®
+
+#define FOSC 16000000UL
+#define BRT  (65536 - FOSC / 115200 / 4)
 
 #endif // !__CONFIG_H_

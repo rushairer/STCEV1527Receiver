@@ -8,15 +8,15 @@ __bit busy;
 
 void UartSend(char dat);
 
-void Time0_init(void) // 100Î¢Ãë@16MHz
+void Time0_init(void) // 100å¾®ç§’@16MHz
 {
-    AUXR |= 0x80; // ¶¨Ê±Æ÷Ê±ÖÓ1TÄ£Ê½
-    TMOD &= 0xF0; // ÉèÖÃ¶¨Ê±Æ÷Ä£Ê½
-    TL0 = 0xC0;   // ÉèÖÃ¶¨Ê±³õÊ¼Öµ
-    TH0 = 0xF9;   // ÉèÖÃ¶¨Ê±³õÊ¼Öµ
-    TF0 = 0;      // Çå³ýTF0±êÖ¾
-    TR0 = 1;      // ¶¨Ê±Æ÷0¿ªÊ¼¼ÆÊ±
-    ET0 = 1;      // Ê¹ÄÜ¶¨Ê±Æ÷0ÖÐ¶Ï
+    AUXR |= 0x80; // å®šæ—¶å™¨æ—¶é’Ÿ1Tæ¨¡å¼
+    TMOD &= 0xF0; // è®¾ç½®å®šæ—¶å™¨æ¨¡å¼
+    TL0 = 0xA0;   // è®¾ç½®å®šæ—¶åˆå§‹å€¼
+    TH0 = 0xF6;   // è®¾ç½®å®šæ—¶åˆå§‹å€¼
+    TF0 = 0;      // æ¸…é™¤TF0æ ‡å¿—
+    TR0 = 1;      // å®šæ—¶å™¨0å¼€å§‹è®¡æ—¶
+    ET0 = 1;      // ä½¿èƒ½å®šæ—¶å™¨0ä¸­æ–­
 }
 
 uint8_t RFPinValue(void)
@@ -24,7 +24,7 @@ uint8_t RFPinValue(void)
     return RF_PIN == 1;
 }
 
-// ÓÅÏÈ¼¶´óÓÚÏÂ½µÑØ´¥·¢
+// ä¼˜å…ˆçº§å¤§äºŽä¸‹é™æ²¿è§¦å‘
 void Timer0_Isr(void) __interrupt(1)
 {
     if (RF_PIN) {
@@ -55,10 +55,10 @@ void Timer0_Isr(void) __interrupt(1)
 
 void INT2_init(void)
 {
-    INTCLKO = 0x10; // Ê¹ÄÜINT2ÖÐ¶Ï
+    INTCLKO = 0x10; // ä½¿èƒ½INT2ä¸­æ–­
 }
 
-// ÏÂ½µÑØ´¥·¢
+// ä¸‹é™æ²¿è§¦å‘
 void INT2_Isr(void) __interrupt(10)
 {
     HData = HTime;
@@ -67,34 +67,32 @@ void INT2_Isr(void) __interrupt(10)
     HTime = 0;
     LTime = 0;
 
-    // 124:4
-    if (((LData >= 80) && (LData <= 150)) && (HData >= 2) && (HData <= 6)) {
-        // ¹ÀËã±ÈÀý ÅÐ¶ÏÊÇ·ñÍ¬²½Âë
+    // 31:1
+    if (((LData >= 145) && (LData <= 160)) && (HData >= 4) && (HData <= 7)) {
+        // ä¼°ç®—æ¯”ä¾‹ åˆ¤æ–­æ˜¯å¦åŒæ­¥ç 
         SyncCodeFlag = 1;
-    } else if ((SyncCodeFlag == 1) && ((HData >= 8) && (HData <= 14))) {
-        // ¹ÀËã±ÈÀý 1
-        EV1527Code = EV1527Code << 1 + 1;
+    } else if ((SyncCodeFlag == 1) && ((HData >= 14) && (HData <= 17))) {
+        // ä¼°ç®—æ¯”ä¾‹ 3:1
+        EV1527Code = (EV1527Code << 1) + 1;
         RFCount++;
-    } else if ((SyncCodeFlag == 1) && ((HData >= 2) && (HData <= 6))) {
-        // ¹ÀËã±ÈÀý 0
+    } else if ((SyncCodeFlag == 1) && ((HData >= 4) && (HData <= 7))) {
+        // ä¼°ç®—æ¯”ä¾‹ 1:3
         EV1527Code = EV1527Code << 1;
         RFCount++;
     }
-
-    IE0 = 0;
 }
 
 void Uart1_Init(void) // 9600bps@16MHz
 {
-    SCON = 0x50;  // 8Î»Êý¾Ý,¿É±ä²¨ÌØÂÊ
-    AUXR |= 0x40; // ¶¨Ê±Æ÷Ê±ÖÓ1TÄ£Ê½
-    AUXR &= 0xFE; // ´®¿Ú1Ñ¡Ôñ¶¨Ê±Æ÷1Îª²¨ÌØÂÊ·¢ÉúÆ÷
-    TMOD &= 0x0F; // ÉèÖÃ¶¨Ê±Æ÷Ä£Ê½
-    TL1  = 0x5F;  // ÉèÖÃ¶¨Ê±³õÊ¼Öµ
-    TH1  = 0xFE;  // ÉèÖÃ¶¨Ê±³õÊ¼Öµ
-    ET1  = 0;     // ½ûÖ¹¶¨Ê±Æ÷ÖÐ¶Ï
-    TR1  = 1;     // ¶¨Ê±Æ÷1¿ªÊ¼¼ÆÊ±
-    ES   = 1;     // Ê¹ÄÜ´®¿Ú1ÖÐ¶Ï
+    SCON = 0x50;  // 8ä½æ•°æ®,å¯å˜æ³¢ç‰¹çŽ‡
+    AUXR |= 0x40; // å®šæ—¶å™¨æ—¶é’Ÿ1Tæ¨¡å¼
+    AUXR &= 0xFE; // ä¸²å£1é€‰æ‹©å®šæ—¶å™¨1ä¸ºæ³¢ç‰¹çŽ‡å‘ç”Ÿå™¨
+    TMOD &= 0x0F; // è®¾ç½®å®šæ—¶å™¨æ¨¡å¼
+    TL1  = 0xCC;  // è®¾ç½®å®šæ—¶åˆå§‹å€¼
+    TH1  = 0xFF;  // è®¾ç½®å®šæ—¶åˆå§‹å€¼
+    ET1  = 0;     // ç¦æ­¢å®šæ—¶å™¨ä¸­æ–­
+    TR1  = 1;     // å®šæ—¶å™¨1å¼€å§‹è®¡æ—¶
+    ES   = 1;     // ä½¿èƒ½ä¸²å£1ä¸­æ–­
     busy = 0;
 }
 
@@ -109,17 +107,17 @@ void UartSend(char dat)
 void Uart1_Isr(void) __interrupt(4)
 {
     if (TI) {
-        TI   = 0; // ÇåÖÐ¶Ï±êÖ¾
+        TI   = 0; // æ¸…ä¸­æ–­æ ‡å¿—
         busy = 0;
     }
     if (RI) {
-        RI = 0; // ÇåÖÐ¶Ï±êÖ¾
+        RI = 0; // æ¸…ä¸­æ–­æ ‡å¿—
     }
 }
 
 void main(void)
 {
-    P_SW2 |= 0x80; // Ê¹ÄÜ·ÃÎÊXFR
+    P_SW2 |= 0x80; // ä½¿èƒ½è®¿é—®XFR
 
     P5M0 = 0x00;
     P5M1 = 0x10;
@@ -140,15 +138,15 @@ void main(void)
     while (1) {
         if (IsRFSuccess) {
             IsRFSuccess         = 0;
-            RF433AddressHigh    = (EV1527Value & 0x00FF0000) % 0x0000FFFF;
-            RF433AddressLow     = (EV1527Value & 0x0000FF00) % 0x000000FF;
-            RF433AddressCommand = EV1527Value & 0x000000FF;
+            RF433AddressHigh    = (EV1527Value & 0xFF0000) % 0x00FFFF;
+            RF433AddressLow     = (EV1527Value & 0x00FF00) % 0x0000FF;
+            RF433AddressCommand = EV1527Value & 0x0000FF;
             EV1527Value         = 0;
 
             RF433Address = (RF433AddressHigh * 256) + RF433AddressLow;
 
-            SBUF = RF433AddressHigh;
-            SBUF = RF433AddressLow;
+            // SBUF = RF433AddressHigh;
+            // SBUF = RF433AddressLow;
             SBUF = RF433AddressCommand;
             P32  = !P32;
         }
