@@ -1,12 +1,9 @@
 #include "STC8G.h"
 #include "config.h"
+#include "uart.h"
 
-__bit busy;
-
-#define CPUIDBASE 0xfde0
-#define ID_ADDR   ((unsigned char volatile __xdata *)(CPUIDBASE + 0x00))
-
-void UartSend(char dat);
+// #define CPUIDBASE 0xfde0
+//  #define ID_ADDR   ((unsigned char volatile __xdata *)(CPUIDBASE + 0x00))
 
 void Time0_init(void) // 100微秒@16MHz
 {
@@ -17,11 +14,6 @@ void Time0_init(void) // 100微秒@16MHz
     TF0 = 0;      // 清除TF0标志
     TR0 = 1;      // 定时器0开始计时
     ET0 = 1;      // 使能定时器0中断
-}
-
-uint8_t RFPinValue(void)
-{
-    return RF_PIN == 1;
 }
 
 // 优先级大于下降沿触发
@@ -67,51 +59,18 @@ void INT2_Isr(void) __interrupt(10)
     HTime = 0;
     LTime = 0;
 
-    // 31:1
+    // 发射端400us一个信号时间, 接收端时钟100us
     if (((LData >= 145) && (LData <= 160)) && (HData >= 4) && (HData <= 7)) {
-        // 估算比例 判断是否同步码
+        // 31:1 判断是否同步码
         SyncCodeFlag = 1;
     } else if ((SyncCodeFlag == 1) && ((HData >= 14) && (HData <= 17))) {
-        // 估算比例 3:1
+        // 比例 3:1
         EV1527Code = (EV1527Code << 1) + 1;
         RFCount++;
     } else if ((SyncCodeFlag == 1) && ((HData >= 4) && (HData <= 7))) {
         // 估算比例 1:3
         EV1527Code = EV1527Code << 1;
         RFCount++;
-    }
-}
-
-void Uart1_Init(void) // 9600bps@16MHz
-{
-    SCON = 0x50;  // 8位数据,可变波特率
-    AUXR |= 0x40; // 定时器时钟1T模式
-    AUXR &= 0xFE; // 串口1选择定时器1为波特率发生器
-    TMOD &= 0x0F; // 设置定时器模式
-    TL1  = 0xCC;  // 设置定时初始值
-    TH1  = 0xFF;  // 设置定时初始值
-    ET1  = 0;     // 禁止定时器中断
-    TR1  = 1;     // 定时器1开始计时
-    ES   = 1;     // 使能串口1中断
-    busy = 0;
-}
-
-void UartSend(char dat)
-{
-    while (busy)
-        ;
-    busy = 1;
-    SBUF = dat;
-}
-
-void Uart1_Isr(void) __interrupt(4)
-{
-    if (TI) {
-        TI   = 0; // 清中断标志
-        busy = 0;
-    }
-    if (RI) {
-        RI = 0; // 清中断标志
     }
 }
 
@@ -142,13 +101,18 @@ void main(void)
             RF433AddressLow     = (EV1527Value & 0x00FF00) % 0x0000FF;
             RF433AddressCommand = EV1527Value & 0x0000FF;
             EV1527Value         = 0;
+            RF433Address        = (RF433AddressHigh * 256) + RF433AddressLow;
 
-            RF433Address = (RF433AddressHigh * 256) + RF433AddressLow;
-
-            // SBUF = RF433AddressHigh;
-            // SBUF = RF433AddressLow;
-            SBUF = RF433AddressCommand;
-            P32  = !P32;
+            if (RF433AddressCommand == ACTION_1) {
+                P33 = 1;
+                P32 = 0;
+            } else if (RF433AddressCommand == ACTION_2) {
+                P33 = 0;
+                P32 = 1;
+            } else if (RF433AddressCommand == ACTION_3) {
+                P33 = 1;
+                P32 = 1;
+            }
         }
     }
 }

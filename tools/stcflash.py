@@ -30,8 +30,8 @@ PROTOCOL_89 = "89"
 PROTOCOL_12C5A = "12c5a"
 PROTOCOL_12C52 = "12c52"
 PROTOCOL_12Cx052 = "12cx052"
-PROTOCOL_8 = "8" 
-PROTOCOL_15 = '15' 
+PROTOCOL_8 = "8"
+PROTOCOL_15 = '15'
 
 PROTOSET_89 = [PROTOCOL_89]
 PROTOSET_12 = [PROTOCOL_12C5A, PROTOCOL_12C52, PROTOCOL_12Cx052]
@@ -53,10 +53,10 @@ class Programmer:
 
         self.chkmode = 0
 
-    def __conn_read(self, size): 
-        buf = bytearray() 
+    def __conn_read(self, size):
+        buf = bytearray()
         while len(buf) < size:
-            s = bytearray(self.conn.read(size - len(buf))) 
+            s = bytearray(self.conn.read(size - len(buf)))
             buf += s
 
             logging.debug("recv: " + " ".join(["%02X" % i for i in s]))
@@ -64,7 +64,7 @@ class Programmer:
             if len(s) == 0:
                 raise IOError()
 
-        return list(buf) 
+        return list(buf)
 
     def __conn_write(self, s):
         logging.debug("send: " + " ".join(["%02X" % i for i in s]))
@@ -164,7 +164,7 @@ class Programmer:
                                      }),
                     0xF448: ("15F", 61, {(0x48, 0x49): ("1K", "S2"),   #STC15F1KS2系列
                                      }),
-                    0xF44C: ("15F", 13, {(0x4C, 0x4D): ("4", "AD"),  
+                    0xF44C: ("15F", 13, {(0x4C, 0x4D): ("4", "AD"),
                                      }),
                     0xF450: ("15F", 8, {(0x50, 0x57): ("1K", "AS"),   #STC15F1KAS系列
                                      }),
@@ -204,7 +204,7 @@ class Programmer:
                                      }),
                     0xF4C8: ("15L", 61, {(0xC8, 0xC9): ("1K", "S2"),   #STC15L1KS2系列
                                      }),
-                    0xF4CC: ("15L", 13, {(0xCC, 0xCD): ("4", "AD"),   
+                    0xF4CC: ("15L", 13, {(0xCC, 0xCD): ("4", "AD"),
                                      }),
                     0xF4D0: ("15L", 8, {(0xD0, 0xD7): ("1K", "AS"),   #STC15L1KS2系列
                                      }),
@@ -309,7 +309,7 @@ class Programmer:
                     0xF676: ("8F", 17, {(0x76, 0x77): ("1K", ""),   #STC8F1K系列
                                      }),
                     0xF700: ("8C", 2, {(0x00, 0x06): ("1K", ""),   #STC8C系列
-                                     }),   
+                                     }),
                     0xF730: ("8H", 2, {(0x30, 0x36): ("1K", ""),   #STC8H1K系列
                                      }),
                     0xF736: ("8H", 17, {(0x36, 0x37): ("1K", ""),   #STC8H1K系列
@@ -362,15 +362,15 @@ class Programmer:
                                      }),
                     }
 
-        iapmcu = ((0xD1, 0x3F), (0xD1, 0x5F), (0xD1, 0x7F), (0xF4, 0x4D), (0xF4, 0x99), (0xF4, 0xD9), (0xF5, 0x58), 
-                  (0xD2, 0x7E), (0xD2, 0xFE), (0xF4, 0x09), (0xF4, 0x59), (0xF4, 0xA9), (0xF4, 0xE9), (0xF5, 0x5D), 
+        iapmcu = ((0xD1, 0x3F), (0xD1, 0x5F), (0xD1, 0x7F), (0xF4, 0x4D), (0xF4, 0x99), (0xF4, 0xD9), (0xF5, 0x58),
+                  (0xD2, 0x7E), (0xD2, 0xFE), (0xF4, 0x09), (0xF4, 0x59), (0xF4, 0xA9), (0xF4, 0xE9), (0xF5, 0x5D),
                   (0xD3, 0x5F), (0xD3, 0xDF), (0xF4, 0x19), (0xF4, 0x69), (0xF4, 0xC9), (0xF5, 0x45), (0xF5, 0x62),
                   (0xE2, 0x76), (0xE2, 0xF6), (0xF4, 0x49), (0xF4, 0x89), (0xF4, 0xCD), (0xF5, 0x55), (0xF5, 0x69),
                   (0xF5, 0x6A), (0xF5, 0x6D),
                   )
 
         try:
-            model = tuple(model) 
+            model = tuple(model)
             if self.model[0] in [0xF4, 0xF5, 0xF6, 0xF7]:
                 prefix, romratio, fixmap = modelmap[stc_type_map(model[0],model[1])]
             elif self.model[0] == 0xF2 and self.model[1] in range(0xA0, 0xA6):
@@ -380,7 +380,7 @@ class Programmer:
                 prefix, romratio, fixmap = modelmap[model[0]]
 
             if model[0] in (0xF0, 0xF1) and 0x20 <= model[1] <= 0x30:
-                prefix = "90" 
+                prefix = "90"
 
             for key, value in fixmap.items():
                 if key[0] <= model[1] <= key[1]:
@@ -411,12 +411,12 @@ class Programmer:
         except KeyError:
             return ("Unknown %02X %02X" % model, None)
 
-    def recv(self, timeout = 1, start = [0x46, 0xB9, 0x68]): 
+    def recv(self, timeout = 1, start = [0x46, 0xB9, 0x68]):
         timeout += time.time()
 
         while time.time() < timeout:
             try:
-                if self.__conn_read(len(start)) == start:                   
+                if self.__conn_read(len(start)) == start:
                     break
             except IOError:
                 continue
@@ -424,21 +424,21 @@ class Programmer:
             logging.debug("recv(..): Timeout")
             raise IOError()
 
-        chksum = start[-1] 
+        chksum = start[-1]
 
-        s = self.__conn_read(2) 
-        n = s[0] * 256 + s[1] 
-        if n > 64: 
+        s = self.__conn_read(2)
+        n = s[0] * 256 + s[1]
+        if n > 64:
             logging.debug("recv(..): Incorrect packet size")
             raise IOError()
-        chksum += sum(s) 
+        chksum += sum(s)
 
-        s = self.__conn_read(n - 3) 
-        if s[n - 4] != 0x16: 
+        s = self.__conn_read(n - 3)
+        if s[n - 4] != 0x16:
             logging.debug("recv(..): Missing terminal symbol")
             raise IOError()
 
-        chksum += sum(s[:-(1+self.chkmode)]) 
+        chksum += sum(s[:-(1+self.chkmode)])
         if self.chkmode > 0 and chksum & 0xFF != s[-2]:
             logging.debug("recv(..): Incorrect checksum[0]")
             raise IOError()
@@ -446,8 +446,8 @@ class Programmer:
             logging.debug("recv(..): Incorrect checksum[1]")
             raise IOError()
 
-        return (s[0], s[1:-(1+self.chkmode)]) 
-    def first_recv(self, timeout = 1, start = [0x46, 0xB9, 0x68]): 
+        return (s[0], s[1:-(1+self.chkmode)])
+    def first_recv(self, timeout = 1, start = [0x46, 0xB9, 0x68]):
         timeout += time.time()
 
         while time.time() < timeout:
@@ -463,19 +463,19 @@ class Programmer:
 
         chksum = start[-1]
 
-        s = self.__conn_read(2) 
-        n = s[0] * 256 + s[1] 
+        s = self.__conn_read(2)
+        n = s[0] * 256 + s[1]
         if n > 64:
             logging.debug("recv(..): Incorrect packet size")
             raise IOError()
-        chksum += sum(s) 
+        chksum += sum(s)
 
-        s = self.__conn_read(n - 3) 
-        if s[n - 4] != 0x16: 
+        s = self.__conn_read(n - 3)
+        if s[n - 4] != 0x16:
             logging.debug("recv(..): Missing terminal symbol")
             raise IOError()
 
-        chksum += sum(s[:-(1+self.chkmode)]) 
+        chksum += sum(s[:-(1+self.chkmode)])
         if self.chkmode > 0 and chksum & 0xFF != s[-2]:
             logging.debug("recv(..): Incorrect checksum[0]")
             raise IOError()
@@ -483,47 +483,47 @@ class Programmer:
             logging.debug("recv(..): Incorrect checksum[1]")
             raise IOError()
 
-        return (s[0], s[1:-(1+self.chkmode)]) 
+        return (s[0], s[1:-(1+self.chkmode)])
 
-    def send(self, cmd, dat): 
-        buf = [0x46, 0xB9, 0x6A] 
+    def send(self, cmd, dat):
+        buf = [0x46, 0xB9, 0x6A]
 
-        n = 1 + 2 + 1 + len(dat) + self.chkmode + 1 
-        buf += [n >> 8, n & 0xFF, cmd] 
+        n = 1 + 2 + 1 + len(dat) + self.chkmode + 1
+        buf += [n >> 8, n & 0xFF, cmd]
 
-        buf += dat  
+        buf += dat
 
-        chksum = sum(buf[2:]) 
+        chksum = sum(buf[2:])
         if self.chkmode > 1:
-            buf += [(chksum >> 8) & 0xFF] 
-        buf += [chksum & 0xFF, 0x16] 
+            buf += [(chksum >> 8) & 0xFF]
+        buf += [chksum & 0xFF, 0x16]
 
         self.__conn_write(buf)
 
-    def detect(self):  
-       
-        for i in range(500): 
+    def detect(self):
+
+        for i in range(500):
             try:
                 if self.protocol in [PROTOCOL_89,PROTOCOL_12C52,PROTOCOL_12Cx052,PROTOCOL_12C5A]:
                     self.__conn_write([0x7F,0x7F])
-                    cmd, dat = self.first_recv(0.03, [0x68]) 
+                    cmd, dat = self.first_recv(0.03, [0x68])
                 else:
-                    self.__conn_write([0x7F])  
-                    cmd, dat = self.first_recv(0.03, [0x68]) 
+                    self.__conn_write([0x7F])
+                    cmd, dat = self.first_recv(0.03, [0x68])
                 break
             except IOError:
                 pass
         else:
-            raise IOError()       
-        
-        
+            raise IOError()
+
+
         self.info = dat[16:]
 
         self.version = "%d.%d%c" % (self.info[0] >> 4,
                                         self.info[0] & 0x0F,
                                         self.info[1])
 
-        self.model = self.info[3:5]  
+        self.model = self.info[3:5]
 
         self.name, self.romsize = self.__model_database(self.model)
 
@@ -531,7 +531,7 @@ class Programmer:
         logging.info("Model name: %s" % self.name)
         logging.info("ROM size: %s" % self.romsize)
 
-        
+
         if self.protocol is None:
             try:
                 self.protocol = {0xF0: PROTOCOL_89,       #STC89/90C5xRC
@@ -550,39 +550,39 @@ class Programmer:
             except KeyError:
                 pass
 
-        if self.protocol in PROTOSET_8: 
+        if self.protocol in PROTOSET_8:
             self.fosc = (dat[0]*0x1000000 +dat[1]*0x10000+dat[2]*0x100) /1000000
-            self.internal_vol = (dat[34]*256+dat[35]) 
-            self.wakeup_fosc = (dat[22]*256+dat[23]) /1000            
+            self.internal_vol = (dat[34]*256+dat[35])
+            self.wakeup_fosc = (dat[22]*256+dat[23]) /1000
             self.test_year = str(hex(dat[36])).replace("0x",'')
             self.test_month = str(hex(dat[37])).replace("0x",'')
             self.test_day = str(hex(dat[38])).replace("0x",'')
             self.version = "%d.%d.%d%c" % (self.info[0] >> 4,
                                         self.info[0] & 0x0F,
                                         self.info[5],
-                                        self.info[1]) 
+                                        self.info[1])
             if dat[10] == 191:
                 self.det_low_vol = 2.2
             else:
-                self.det_low_vol = (191 - dat[10])*0.3 + 2.1    
+                self.det_low_vol = (191 - dat[10])*0.3 + 2.1
 
         elif self.protocol in PROTOSET_15:
-            self.fosc = (dat[7]*0x1000000 +dat[8]*0x10000+dat[9]*0x100) /1000000 
+            self.fosc = (dat[7]*0x1000000 +dat[8]*0x10000+dat[9]*0x100) /1000000
             self.wakeup_fosc = (dat[0]*256+dat[1]) /1000
-            self.internal_vol = (dat[34]*256+dat[35])  
+            self.internal_vol = (dat[34]*256+dat[35])
             self.test_year = str(hex(dat[41])).replace("0x",'')
             self.test_month = str(hex(dat[42])).replace("0x",'')
             self.test_day = str(hex(dat[43])).replace("0x",'')
             self.version = "%d.%d.%d%c" % (self.info[0] >> 4,
                                         self.info[0] & 0x0F,
                                         self.info[5],
-                                        self.info[1])   
-            
+                                        self.info[1])
+
         else:
             self.fosc = (float(sum(dat[0:16:2]) * 256 + sum(dat[1:16:2])) / 8
                      * self.conn.baudrate / 580974)
 
-        if self.protocol in PROTOSET_PARITY or self.protocol in PROTOSET_8 or self.protocol in PROTOSET_15: 
+        if self.protocol in PROTOSET_PARITY or self.protocol in PROTOSET_8 or self.protocol in PROTOSET_15:
             self.chkmode = 2
             self.conn.parity = serial.PARITY_EVEN
         else:
@@ -608,13 +608,13 @@ class Programmer:
         if self.protocol in PROTOSET_8:
             print("掉电唤醒定时器频率: %.3fKHz" % self.wakeup_fosc)
             print("内部参考电压: %d mV" %self.internal_vol)
-            print("低压检测电压: %.1f V" %self.det_low_vol) 
-            print("内部安排测试时间: 20%s年%s月%s日" %(self.test_year,self.test_month,self.test_day))           
+            print("低压检测电压: %.1f V" %self.det_low_vol)
+            print("内部安排测试时间: 20%s年%s月%s日" %(self.test_year,self.test_month,self.test_day))
 
         if self.protocol in PROTOSET_15:
             print("掉电唤醒定时器频率: %.3fKHz" % self.wakeup_fosc)
-            print("内部参考电压: %d mV" %self.internal_vol) 
-            print("内部安排测试时间: 20%s年%s月%s日" %(self.test_year,self.test_month,self.test_day))   
+            print("内部参考电压: %d mV" %self.internal_vol)
+            print("内部安排测试时间: 20%s年%s月%s日" %(self.test_year,self.test_month,self.test_day))
 
         print("单片机型号: %s" % self.name)
         print("固件版本号: %s" % self.version)
@@ -653,19 +653,19 @@ class Programmer:
 
     def handshake(self):
         baud0 = self.conn.baudrate
-        
+
         if self.protocol in PROTOSET_8:
             baud = 115200 #若没指定波特率，默认为115200
             if highbaud_pre != 115200:
                 baud = highbaud_pre
             #支持460800以内的任意波特率
             #典型波特率：460800、230400、115200、57600、38400、28800、19200、14400、9600、4800
-            if baud in range(460801): 
+            if baud in range(460801):
                 #定时器1重载值计算微调，可能由于目标芯片的差异性需要微调
                 if baud in [300000,350000]:
-                    Timer1_value = int(65536.2 - float(24.0 * 1000000 / 4 / baud))  
-                else: 
-                    Timer1_value = int(65536.5 - float(24.0 * 1000000 / 4 / baud))  
+                    Timer1_value = int(65536.2 - float(24.0 * 1000000 / 4 / baud))
+                else:
+                    Timer1_value = int(65536.5 - float(24.0 * 1000000 / 4 / baud))
 
                 if self.fosc < 24.5 and self.fosc > 23.5:    #24M
                     foc_value = 0x7B
@@ -687,19 +687,19 @@ class Programmer:
                     foc_value = 0x5A
                 else:
                     foc_value = 0x6B
-                              
+
                 baudstr = [0x00, 0x00, Timer1_value >> 8, Timer1_value & 0xff, 0x01, foc_value, 0x81]
-                
+
                 self.send(0x01, baudstr )
                 try:
-                    cmd, dat = self.recv()                   
+                    cmd, dat = self.recv()
                 except Exception:
                     logging.info("Cannot use baudrate %d" % baud)
                     time.sleep(0.2)
                     self.conn.flushInput()
                 finally:
                     self.__conn_baudrate(baud0, False)
-                
+
             logging.info("Change baudrate to %d" % baud)
             self.__conn_baudrate(baud)
             self.baudrate = baud
@@ -709,12 +709,12 @@ class Programmer:
                 baud = highbaud_pre
             #支持460800以内的任意波特率
             #典型波特率：460800、230400、115200、57600、38400、28800、19200、14400、9600、4800
-            if baud in range(460801): 
+            if baud in range(460801):
                 #定时器1重载值计算微调，可能由于目标芯片的差异性需要微调
                 if baud in [300000,350000]:
-                    Timer1_value = int(65536.2 - float(22.1184 * 1000000 / 4 / baud))  
-                else: 
-                    Timer1_value = int(65536.5 - float(22.1184 * 1000000 / 4 / baud))  
+                    Timer1_value = int(65536.2 - float(22.1184 * 1000000 / 4 / baud))
+                else:
+                    Timer1_value = int(65536.5 - float(22.1184 * 1000000 / 4 / baud))
 
                 if self.fosc < 24.5 and self.fosc > 23.5:    #24M
                     foc_value_1 = 0x40
@@ -743,20 +743,20 @@ class Programmer:
                 elif self.fosc < 5.9 and self.fosc > 5.0:  #5.5296M
                     foc_value_1 = 0xC0
                     foc_value_2 = 0x7B
-                              
+
                 baudstr = [0x6d, 0x40, Timer1_value >> 8, Timer1_value & 0xff, foc_value_1,foc_value_2, 0x81]
                 #baudstr = [0x6b, 0x40, 0xff,0xf4,   0x40,0x92, 0x81]
-                
+
                 self.send(0x01, baudstr )
                 try:
-                    cmd, dat = self.recv()                   
+                    cmd, dat = self.recv()
                 except Exception:
                     logging.info("Cannot use baudrate %d" % baud)
                     time.sleep(0.2)
                     self.conn.flushInput()
                 finally:
                     self.__conn_baudrate(baud0, False)
-                
+
             logging.info("Change baudrate to %d" % baud)
             self.__conn_baudrate(baud)
             self.baudrate = baud
@@ -788,7 +788,7 @@ class Programmer:
                          % (baud,
                             abs(round(t) - t) / t,
                             " ".join(["%02X" % i for i in baudstr])))
-               
+
                 if self.protocol in PROTOSET_89:
                     freqlist = (40, 20, 10, 5)
                 else:
@@ -830,8 +830,8 @@ class Programmer:
             self.send(0x84, [0x01, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33])
             cmd, dat = self.recv(10)
             assert cmd == 0x80
-        
-        elif self.protocol in PROTOSET_8 or self.protocol in PROTOSET_15: 
+
+        elif self.protocol in PROTOSET_8 or self.protocol in PROTOSET_15:
             self.send(0x05, [0x00, 0x00, 0x5A, 0xA5])
             cmd, dat = self.recv(10)
             self.send(0x03, [0x00, 0x00, 0x5A, 0xA5])
@@ -843,7 +843,7 @@ class Programmer:
                 if len(dat[i]) == 1:
                     dat_value = list(dat[i])
                     dat_value.insert(0, '0')
-                    dat[i] = ''.join(dat_value) 
+                    dat[i] = ''.join(dat_value)
             serial_number = ""
             for i in dat:
                 serial_number = serial_number +str(i)
@@ -866,10 +866,10 @@ class Programmer:
 
     def flash(self, code):
         code = list(code) + [0xff] * (511 - (len(code) - 1) % 512)
-        
+
         for i in range(0, len(code), 128):
             logging.info("Flash code region (%04X, %04X)" % (i, i + 127))
-           
+
             if self.protocol in PROTOSET_8 or self.protocol in PROTOSET_15:
                 flag_test = 1
                 addr = [i >> 8, i & 0xFF, 0x5A, 0xA5]
@@ -976,7 +976,7 @@ def program(prog, code, erase_eeprom=None):
 
     print("完成")
 
-    prog.print_info() 
+    prog.print_info()
 
     if prog.protocol is None:
         raise IOError("未知目标")
@@ -984,14 +984,14 @@ def program(prog, code, erase_eeprom=None):
     if code is None:
         return
 
-    prog.unknown_packet_1() 
+    prog.unknown_packet_1()
 
     sys.stdout.write("切换至最高波特率: ")
     sys.stdout.flush()
 
-    prog.handshake() 
+    prog.handshake()
 
-    print("%d bps"% prog.baudrate) 
+    print("%d bps"% prog.baudrate)
 
     prog.unknown_packet_2()
 
@@ -1000,29 +1000,29 @@ def program(prog, code, erase_eeprom=None):
 
     time_start = time.time()
 
-    prog.erase() 
+    prog.erase()
 
     print("擦除完成")
 
-    print("代码长度: %d bytes" % len(code)) 
+    print("代码长度: %d bytes" % len(code))
 
 
     # print("Programming: ", end="", flush=True)
-    sys.stdout.write("正在下载用户代码...")  
-    sys.stdout.flush()  
+    sys.stdout.write("正在下载用户代码...")
+    sys.stdout.flush()
 
     oldbar = 0
-    for progress in prog.flash(code): 
-        bar = int(progress * 25)  
-        sys.stdout.write("#" * (bar - oldbar)) 
-        sys.stdout.flush()   
+    for progress in prog.flash(code):
+        bar = int(progress * 25)
+        sys.stdout.write("#" * (bar - oldbar))
+        sys.stdout.flush()
         oldbar = bar
 
     print(" 完成")
 
-    prog.unknown_packet_3() 
+    prog.unknown_packet_3()
 
-    sys.stdout.write("设置选项...") 
+    sys.stdout.write("设置选项...")
     sys.stdout.flush()
 
     if prog.options(erase_eeprom=erase_eeprom):
@@ -1030,7 +1030,7 @@ def program(prog, code, erase_eeprom=None):
     else:
         print("设置失败")
 
-    prog.terminate() 
+    prog.terminate()
     time_end = time.time()
     print("耗时: %.3fs"% (time_end-time_start))
 
@@ -1084,8 +1084,8 @@ def hex2bin(code):
 
     return buf
 
-def stc_type_map(type, value):  
-    if type == 0xF6:      
+def stc_type_map(type, value):
+    if type == 0xF6:
         if value in range(0x01,0x09):
             return 0xF600
         elif value in range(0x21,0x29):
@@ -1112,7 +1112,7 @@ def stc_type_map(type, value):
             return  0xF670
         elif value == 0x77:
             return  0xF676
-    if type == 0xF7: 
+    if type == 0xF7:
         if value in range(0x01,0x07):
             return  0xF700
         elif value in range(0x31,0x37):
@@ -1311,13 +1311,13 @@ def stc_type_map(type, value):
             return 0xF56C
         elif value in range(0x7F,0x86):
             return 0xF57E
-    if type == 0xF2:  
-        if value in range(0xA0,0xA6): 
+    if type == 0xF2:
+        if value in range(0xA0,0xA6):
             return  0xF2A0
-    
 
-def main(): 
- 
+
+def main():
+
     if sys.platform == "win32":
         port = "COM3"
     elif sys.platform == "darwin":
@@ -1376,8 +1376,8 @@ def main():
                      '12c5a': PROTOCOL_12C5A,
                      '12c52': PROTOCOL_12C52,
                      '12cx052': PROTOCOL_12Cx052,
-                     '8': PROTOCOL_8,  
-                     '15': PROTOCOL_15, 
+                     '8': PROTOCOL_8,
+                     '15': PROTOCOL_15,
                      'auto': None}[opts.protocol]
 
     if not opts.erase_eeprom and not opts.not_erase_eeprom:
@@ -1397,7 +1397,7 @@ def main():
         code = None
 
     print("通信端口：%s  最低波特率：%d bps" % (opts.port, opts.lowbaud))
-    
+
     global highbaud_pre
     highbaud_pre = opts.highbaud
     with serial.Serial(port=opts.port,

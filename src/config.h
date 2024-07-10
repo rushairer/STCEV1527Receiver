@@ -2,8 +2,12 @@
 #define __CONFIG_H_
 #include <stdint.h>
 
-#define RF_PIN  P54
-#define BTN_PIN P55
+#define RF_PIN   P54
+#define BTN_PIN  P55
+
+#define ACTION_1 0x19
+#define ACTION_2 0x29
+#define ACTION_3 0x49
 
 uint8_t HTime        = 0; // 高电平时间
 uint8_t LTime        = 0; // 低电平时间
@@ -21,10 +25,6 @@ uint8_t Synced = 1;
 uint8_t RF433AddressHigh    = 0;
 uint8_t RF433AddressLow     = 0;
 uint8_t RF433AddressCommand = 0;
-
-uint16_t RF433Address = 65535; // 随机设置
-
-#define FOSC 16000000UL
-#define BRT  (65536 - FOSC / 115200 / 4)
+uint16_t RF433Address       = 65535;
 
 #endif // !__CONFIG_H_

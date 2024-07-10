@@ -3,7 +3,7 @@
 
 /////////////////////////////////////////////////
 
-// ������ͷ�ļ���,���������ٰ���"REG51.H"
+// 包含本头文件后,不用另外再包含"REG51.H"
 
 __sfr __at(0x80) P0;
 __sbit __at(0x80) P00;
@@ -252,8 +252,8 @@ __sbit __at(0xFF) P77;
 __sfr __at(0xFC) USBADR;
 __sfr __at(0xFF) RSTCFG;
 
-// �������⹦�ܼĴ���λ����չRAM����
-// ������Щ�Ĵ���,���Ƚ�P_SW2��BIT7����Ϊ1,�ſ�������д
+// 如下特殊功能寄存器位于扩展RAM区域
+// 访问这些寄存器,需先将P_SW2的BIT7设置为1,才可正常读写
 
 /////////////////////////////////////////////////
 // FF00H-FFFFH
@@ -937,11 +937,11 @@ __xdata volatile unsigned char __at(0xf944) PWMA_CCR6L;
 // sfr       USBCON      =           0xf4;
 // sfr       USBADR      =           0xfc;
 
-// ʹ�÷���:
+// 使用方法:
 //       char dat;
 //
-//       READ_USB(CSR0, dat);        //��USB�Ĵ���
-//       WRITE_USB(FADDR, 0x00);     //дUSB�Ĵ���
+//       READ_USB(CSR0, dat);        //读USB寄存器
+//       WRITE_USB(FADDR, 0x00);     //写USB寄存器
 
 #define READ_USB(reg, dat)     \
     {                          \
@@ -1115,8 +1115,8 @@ __xdata volatile unsigned char __at(0xf944) PWMA_CCR6L;
 
 /////////////////////////////////////////////////
 
-#define EAXSFR() P_SW2 |= 0x80  /* MOVX A,@DPTR/MOVX @DPTR,Aָ��Ĳ�������Ϊ��չSFR(XSFR) */
-#define EAXRAM() P_SW2 &= ~0x80 /* MOVX A,@DPTR/MOVX @DPTR,Aָ��Ĳ�������Ϊ��չRAM(XRAM) */
+#define EAXSFR() P_SW2 |= 0x80  /* MOVX A,@DPTR/MOVX @DPTR,A指令的操作对象为扩展SFR(XSFR) */
+#define EAXRAM() P_SW2 &= ~0x80 /* MOVX A,@DPTR/MOVX @DPTR,A指令的操作对象为扩展RAM(XRAM) */
 
 /////////////////////////////////////////////////
 #define NOP1()  _nop_()
